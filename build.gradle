@@ -4,6 +4,7 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 version = '1.0'
 group = "io.github.greetlib"
+mainClassName = "io.github.greetlib.greetbot.GreetBot"
 
 repositories {
     mavenCentral()
