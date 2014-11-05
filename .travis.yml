@@ -1,0 +1,13 @@
+language: groovy
+jdk:
+  - oraclejdk8
+notifications:
+  irc:
+    channels:
+      - "irc.esper.net#greet"
+    template:
+      - "%{repository_name}/%{branch}(%{commit}) #%{build_number}: %{message} - %{duration}"
+      - "%{commit_message} - %{author}"
+      - "Build log: %{build_url}"
+      - "Revision comparison: %{compare_url}"
+    skip_join: true
