@@ -15,7 +15,7 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.0-beta-3'
     compile 'org.apache.logging.log4j:log4j-core:2.0.2'
     compile 'org.apache.logging.log4j:log4j-api:2.0.2'
-    compile 'io.github.greetlib:Greet:1.0'
+    compile 'io.github.greetlib:greet:1.0'
     compile 'org.yaml:snakeyaml:1.14'
     compile 'org.mindrot:jbcrypt:0.3m'
     compile 'mysql:mysql-connector-java:5.1.33'
