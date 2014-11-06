@@ -4,10 +4,9 @@ import io.github.greetlib.greet.event.EventHandler
 import io.github.greetlib.greet.event.irc.MessageEvent
 import io.github.greetlib.greetbot.AccessPrivilege
 import io.github.greetlib.greetbot.Command
+import io.github.greetlib.greetbot.GreetBotModule
 import io.github.greetlib.greetbot.model.ChannelData
 import io.github.greetlib.greetbot.model.CommandDefinition
-import io.github.greetlib.greetbot.GreetBotModule
-import io.github.greetlib.greetbot.config.BotConfig
 import io.github.greetlib.greetbot.model.UserData
 import io.github.greetlib.greetbot.util.HostUtil
 

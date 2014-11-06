@@ -1,6 +1,7 @@
 package io.github.greetlib.greetbot.database
 
 import io.github.greetlib.greetbot.GreetBotModule
+import io.github.greetlib.greetbot.cache.LRUCacheStatistics
 import io.github.greetlib.greetbot.model.ChannelData
 import io.github.greetlib.greetbot.model.UserData
 
@@ -21,4 +22,6 @@ abstract class DatabaseConnection {
     abstract void addChannel(ChannelData channelData)
     abstract ArrayList<String> getChannelNames(String networkAlias)
     abstract ChannelData getChannelData(String networkAlias, String channelName)
+    abstract LRUCacheStatistics getCacheStatistics()
+    abstract void clearCache()
 }

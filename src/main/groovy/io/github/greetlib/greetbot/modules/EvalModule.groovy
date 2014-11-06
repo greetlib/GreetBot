@@ -1,7 +1,5 @@
 package io.github.greetlib.greetbot.modules
 
-import groovy.io.GroovyPrintWriter
-import io.github.greetlib.greet.event.irc.MessageEvent
 import io.github.greetlib.greetbot.Command
 import io.github.greetlib.greetbot.GreetBotModule
 import io.github.greetlib.greetbot.ScriptBase

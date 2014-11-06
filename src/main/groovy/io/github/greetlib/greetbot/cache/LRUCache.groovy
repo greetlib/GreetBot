@@ -7,7 +7,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     private final HashMap<K, Long> expiryMap = new HashMap<>()
     final int capacity
     TimeDuration expiryTime
-    final LRUCacheStatistics stats = new LRUCacheStatistics()
+    final LRUCacheStatistics cacheStats = new LRUCacheStatistics()
 
     LRUCache(TimeDuration expiryTime = new TimeDuration(0, 30, 0, 0), int capacity = 100){
         super(capacity, 1.1f, true)
@@ -18,12 +18,12 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     @Override
     V get(Object key) {
         if(isExpired(key)) {
-            stats.miss++
+            cacheStats.miss++
             return null
         }
         V obj = (V)super.get(key)
-        if(obj != null) stats.hit++
-        else stats.miss++
+        if(obj != null) cacheStats.hit++
+        else cacheStats.miss++
         return obj
     }
 
@@ -36,7 +36,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     @Override
     V put(K key, V value) {
         expiryMap.put(key, System.currentTimeMillis() + expiryTime.toMilliseconds())
-        stats.puts++
+        cacheStats.puts++
         super.put(key, value)
     }
 
@@ -47,7 +47,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
         }
         else if(System.currentTimeMillis() > expireTime) {
             expiryMap.remove(key)
-            stats.expired++
+            cacheStats.expired++
             return true
         }
         return !containsKey(key)
@@ -56,5 +56,11 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> entry) {
         return size() > capacity
+    }
+
+    @Override
+    public void clear() {
+        super.clear()
+        cacheStats.reset()
     }
 }

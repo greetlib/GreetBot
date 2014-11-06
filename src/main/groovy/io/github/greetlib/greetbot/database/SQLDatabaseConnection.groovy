@@ -5,10 +5,11 @@ import groovy.sql.Sql
 import groovy.util.logging.Log4j2
 import io.github.greetlib.greetbot.AccessPrivilege
 import io.github.greetlib.greetbot.GreetBotModule
+import io.github.greetlib.greetbot.cache.LRUCache
+import io.github.greetlib.greetbot.cache.LRUCacheStatistics
+import io.github.greetlib.greetbot.config.BotConfig
 import io.github.greetlib.greetbot.model.ChannelData
 import io.github.greetlib.greetbot.model.ModuleData
-import io.github.greetlib.greetbot.cache.LRUCache
-import io.github.greetlib.greetbot.config.BotConfig
 import io.github.greetlib.greetbot.model.UserData
 import io.github.greetlib.greetbot.util.TokenUtil
 
@@ -252,6 +253,16 @@ class SQLDatabaseConnection extends DatabaseConnection {
             }
         }
         return networkChannelCache.get(networkAlias).get(channelName)
+    }
+
+    @Override
+    LRUCacheStatistics getCacheStatistics() {
+        return hostnameUserDataCache.getCacheStats()
+    }
+
+    @Override
+    void clearCache() {
+        hostnameUserDataCache.clear()
     }
 
     private long getNetworkID(String alias) {
