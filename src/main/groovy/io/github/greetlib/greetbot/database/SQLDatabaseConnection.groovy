@@ -57,6 +57,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     @Override
     UserData getUserDataByEmail(String email) {
         long tokenID = getTokenIDByEmail(email)
+        if(!tokenID) return null
         [
             tokenID: tokenID,
             knownHosts: getKnownHosts(tokenID),
@@ -329,6 +330,6 @@ class SQLDatabaseConnection extends DatabaseConnection {
         GroovyRowResult result = sql.firstRow """
             SELECT `TokenID` FROM `Tokens` WHERE `Email` = $email
         """
-        return result["TokenID"] as long
+        return result ? ["TokenID"] as long : null
     }
 }
