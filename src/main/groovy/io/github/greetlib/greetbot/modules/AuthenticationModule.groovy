@@ -106,7 +106,7 @@ class AuthenticationModule extends GreetBotModule {
             c.messageEvent.reply "Invalid token or email"
             return
         }
-        greetBot.database.addKnownHost(userData, HostUtil.getUserHostMask(c.messageEvent.source))
+        greetBot.database.addKnownHost(userData, c.userHost)
         c.messageEvent.reply "Authorized."
     }
 
