@@ -33,7 +33,7 @@ class LRUCacheStatistics {
     String toString() {
         return "Hits: ${hit} / " +
                "Misses: ${miss} / " +
-               "Ratio: ${miss/hit} / " +
+               "Ratio: ${try {miss/hit} catch(ArithmeticException ignored){ 0 }} / " +
                "Total Objects: ${totalObjects}/${capacity} / " +
                "Expired: ${expired} / " +
                "Puts: ${puts} / " +

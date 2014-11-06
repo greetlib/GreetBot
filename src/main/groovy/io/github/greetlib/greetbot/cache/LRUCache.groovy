@@ -13,6 +13,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
         super(capacity, 1.1f, true)
         this.capacity = capacity
         this.expiryTime = expiryTime
+        this.cacheStats.capacity = capacity
     }
 
     @Override
@@ -37,6 +38,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     V put(K key, V value) {
         expiryMap.put(key, System.currentTimeMillis() + expiryTime.toMilliseconds())
         cacheStats.puts++
+        cacheStats.totalObjects++
         super.put(key, value)
     }
 
@@ -55,7 +57,11 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> entry) {
-        return size() > capacity
+        if(size() > capacity) {
+            cacheStats.totalObjects--
+            return true
+        }
+        return false
     }
 
     @Override
