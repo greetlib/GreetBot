@@ -53,7 +53,7 @@ class CommandManager extends GreetBotEventListener {
         if(accessPrivilege == null) accessPrivilege = AccessPrivilege.DEFAULT
         if(accessPrivilege >= cmdDef.privilege) hasAccess = true
         if(hasAccess) {
-            if(!cmdDef.argCount.contains(cmdParts.size()-1)) {
+            if(cmdDef.argCount && !cmdDef.argCount.contains(cmdParts.size()-1)) {
                 event.reply "Syntax: ${cmdDef.usage}"
                 return
             }

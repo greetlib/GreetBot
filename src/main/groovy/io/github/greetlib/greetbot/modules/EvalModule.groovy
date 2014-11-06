@@ -29,7 +29,6 @@ class EvalModule extends GreetBotModule {
         groovyShell = new GroovyShell(this.class.classLoader, binding, config)
         commands.add(new CommandDefinition([
             command: 'eval',
-            argCount: 1..5000,
             help: 'Evaluate Groovy expression or short script',
             usage: 'eval <expression>',
             privilege: [accessLevel: 50]
@@ -47,7 +46,6 @@ class EvalModule extends GreetBotModule {
         }
         String exp = c.args.join(" ")
         String result = ""
-        replyWriter.target = c.messageEvent
         try {
             result = groovyShell.evaluate(exp).toString()
         } catch(Exception ex) {
