@@ -63,7 +63,7 @@ class CommandManager extends GreetBotEventListener {
                 Command command = new Command(cmd, cmdParts.subList(1, cmdParts.size()), event, cmdDef, userData)
                 cmdMap.get(cmd).onCommand(command)
             } catch(Exception ex) {
-                event.reply "Error during command processing: ${ex.cause.message}"
+                event.reply "Error during command processing: ${ex.message}"
             }
         }
     }
