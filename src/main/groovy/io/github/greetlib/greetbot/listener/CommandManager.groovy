@@ -18,10 +18,11 @@ class CommandManager extends GreetBotEventListener {
     @EventHandler
     void onMessage(MessageEvent event) {
         ChannelData channelData
-        String prefix = DEFAULT_PREFIX
+        String prefix = ""
         if(!event.isPrivate) {
             channelData = greetBot.database.getChannelData(event.connection.clientInfo.networkAlias, event.destination)
             if(channelData) prefix = channelData.commandPrefix
+            else prefix = DEFAULT_PREFIX
             if(!event.message.startsWith(prefix)) return
         }
         // Split into command and args
@@ -58,8 +59,12 @@ class CommandManager extends GreetBotEventListener {
                 event.reply "Syntax: ${cmdDef.usage}"
                 return
             }
-            Command command = new Command(cmd, cmdParts.subList(1, cmdParts.size()), event, cmdDef, userData)
-            cmdMap.get(cmd).onCommand(command)
+            try {
+                Command command = new Command(cmd, cmdParts.subList(1, cmdParts.size()), event, cmdDef, userData)
+                cmdMap.get(cmd).onCommand(command)
+            } catch(Exception ex) {
+                event.reply "Error during command processing: ${ex.cause.message}"
+            }
         }
     }
 
