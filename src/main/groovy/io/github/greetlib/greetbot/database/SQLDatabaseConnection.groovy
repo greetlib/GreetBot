@@ -19,12 +19,18 @@ import java.sql.ResultSet
 class SQLDatabaseConnection extends DatabaseConnection {
     private Sql sql
     private final String schema
+    private final String DATABASE_URL
+    private final String DATABASE_USER
+    private final String DATABASE_PASS
 
     LRUCache<String, UserData> hostnameUserDataCache = new LRUCache<>();
     HashMap<String, HashMap<String, ChannelData>> networkChannelCache = new HashMap<>()
 
     public SQLDatabaseConnection(String host, int port, String schema, String user, String password) {
-        sql = Sql.newInstance("jdbc:mysql://$host:$port/$schema", user, password)
+        DATABASE_URL = "jdbc:mysql://$host:$port/$schema"
+        DATABASE_USER = user
+        DATABASE_PASS = password
+        sql = Sql.newInstance(DATABASE_URL, DATABASE_USER, DATABASE_PASS)
         this.schema = schema
     }
 
@@ -36,8 +42,27 @@ class SQLDatabaseConnection extends DatabaseConnection {
                 botConfig.databaseConfig.password)
     }
 
+    private boolean checkConnection() {
+        if(!sql.connection.isValid(2000)) {
+            try {
+                sql.close()
+                sql = Sql.newInstance(DATABASE_URL, DATABASE_USER, DATABASE_PASS)
+                if(sql.connection.isValid(2000)) return true
+                else {
+                    log.error "Could not connect to database"
+                    return false
+                }
+            } catch(Exception ex) {
+                log.error "Could not connect to database", ex
+                return false
+            }
+        }
+        return true
+    }
+
     @Override
     synchronized UserData getUserDataByHostname(String hostname) {
+        if(!checkConnection()) return null
         UserData userData = hostnameUserDataCache.get(hostname)
         if(!userData) {
             Long tokenID = getTokenIdByHostname(hostname)
@@ -56,6 +81,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     UserData getUserDataByEmail(String email) {
+        if(!checkConnection()) return null
         long tokenID = getTokenIDByEmail(email)
         if(!tokenID) return null
         [
@@ -69,6 +95,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void saveModuleInfo(GreetBotModule greetBotModule) {
+        if(!checkConnection()) return
         ModuleData moduleInfo = greetBotModule.moduleData
         sql.execute """
             INSERT INTO `Modules` (Name, Author, Version, TokenID, ShortDescription, LongDescription)
@@ -89,6 +116,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void setToken(long tokenID, String tokenHash) {
+        if(!checkConnection()) return
         sql.execute """
             UPDATE `Tokens` SET `Token` = $tokenHash WHERE `TokenID` = $tokenID
         """
@@ -96,6 +124,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     boolean verifyToken(long tokenID, String token) {
+        if(!checkConnection()) return false
         String tokenHash = sql.firstRow("""
             SELECT `Token` FROM `Tokens` WHERE `TokenID` = $tokenID
         """)['Token']
@@ -104,6 +133,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void addKnownHost(UserData userData, String userHost) {
+        if(!checkConnection()) return
         sql.execute """
             INSERT INTO `Hosts` (TokenID, Host) VALUES(${userData.tokenID}, $userHost)
         """
@@ -113,6 +143,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void deleteKnownHost(UserData userData, String userHost) {
+        if(!checkConnection()) return
         sql.execute """
             DELETE FROM `Hosts` WHERE `TokenID` = ${userData.tokenID} AND `Host` = ${userHost}
         """
@@ -121,6 +152,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     long getChannelID(String channelName, String networkAlias) {
+        if(!checkConnection()) return null as Long
         long networkID = sql.firstRow("""
             SELECT `NetworkID` FROM `Networks` WHERE `Host` = $networkAlias
         """)['NetworkID'] as long
@@ -132,6 +164,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void setChannelAccess(UserData userData, String channelName, String networkAlias, short accessLevel) {
+        if(!checkConnection()) return
         long channelID = getChannelID(channelName, networkAlias)
         sql.execute """
             REPLACE INTO `ChannelAccess` (TokenID, ChannelID, AccessLevel)
@@ -142,6 +175,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void setGlobalAccess(UserData userData, short accessLevel) {
+        if(!checkConnection()) return
         sql.execute """
             UPDATE `Tokens` SET `AccessLevel` = $accessLevel WHERE `TokenID` = ${userData.tokenID}
         """
@@ -150,6 +184,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void addUserData(UserData userData, String tokenHash, String email, String networkAlias) {
+        if(!checkConnection()) return
         sql.execute("""
             INSERT INTO `Tokens` (Token, Email, AccessLevel)
             VALUES($tokenHash, $email, ${userData.globalAccess.accessLevel})
@@ -179,6 +214,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void addNetwork(String host) {
+        if(!checkConnection()) return
         sql.execute """
             INSERT INTO `Networks` (Host) VALUES($host) ON DUPLICATE KEY UPDATE `Host` = `Host`
         """
@@ -186,6 +222,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void addChannel(ChannelData channelData) {
+        if(!checkConnection()) return
         long networkID = getNetworkID(channelData.networkAlias)
         boolean channelExists = sql.firstRow("""
             SELECT COUNT(*) AS `EXISTS` FROM `Channels` WHERE `ChannelName` = ${channelData.channelName} AND `NetworkID` = $networkID
@@ -207,6 +244,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     void removeChannel(String channel, String networkAlias) {
+        if(!checkConnection()) return
         long networkID = getNetworkID(networkAlias)
         sql.execute """
             DELETE FROM `Channels` WHERE `ChannelName` = ${channel} AND `NetworkID` = ${networkID}
@@ -216,6 +254,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     ArrayList<String> getChannelNames(String networkAlias) {
+        if(!checkConnection()) return null
         if(!networkChannelCache.containsKey(networkAlias) || networkChannelCache.get(networkAlias).isEmpty()) {
             long networkID = getNetworkID(networkAlias)
             HashMap<String, ChannelData> channelDataMap = new HashMap<>()
@@ -243,6 +282,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
 
     @Override
     ChannelData getChannelData(String networkAlias, String channelName) {
+        if(!checkConnection()) return null
         if(!networkChannelCache.containsKey(networkAlias) || !networkChannelCache.get(networkAlias).containsKey(channelName)) {
             long networkID = getNetworkID(networkAlias)
             sql.eachRow """
@@ -276,6 +316,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     private long getNetworkID(String alias) {
+        if(!checkConnection()) return null as Long
         return sql.firstRow("""
                 SELECT `NetworkID` FROM `Networks` WHERE `Host` = $alias
             """)?.get("NetworkID") as Long
@@ -288,6 +329,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     private HashMap<String, AccessPrivilege> getChannelAccess(long tokenID) {
+        if(!checkConnection()) return null
         HashMap<String, AccessPrivilege> channelAccess = new HashMap<>()
         sql.eachRow """
             SELECT `ChannelName`, `AccessLevel` from `ChannelAccess`, `Channels` WHERE `ChannelAccess`.`TokenID` = $tokenID
@@ -298,6 +340,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     private AccessPrivilege getGlobalAccess(long tokenID) {
+        if(!checkConnection()) return null
         GroovyRowResult result = sql.firstRow("""
             SELECT `AccessLevel` from `Tokens` WHERE `TokenID` = $tokenID
         """)
@@ -305,6 +348,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     private ArrayList<String> getKnownHosts(long tokenID) {
+        if(!checkConnection()) return null
         ArrayList<String> knownHosts = []
         sql.eachRow """
             SELECT `Host` FROM `Hosts`
@@ -316,6 +360,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     private ArrayList<String> getCreatedModules(long tokenID) {
+        if(!checkConnection()) return null
         ArrayList<String> modules = new ArrayList<>()
         sql.eachRow """
             SELECT `Name` FROM `Modules`
@@ -327,6 +372,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     private long getTokenIDByEmail(String email) {
+        if(!checkConnection()) return null as Long
         GroovyRowResult result = sql.firstRow """
             SELECT `TokenID` FROM `Tokens` WHERE `Email` = $email
         """
