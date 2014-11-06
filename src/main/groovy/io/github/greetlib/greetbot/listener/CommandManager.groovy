@@ -11,18 +11,20 @@ import io.github.greetlib.greetbot.model.UserData
 import io.github.greetlib.greetbot.util.HostUtil
 
 class CommandManager extends GreetBotEventListener {
+    static String DEFAULT_PREFIX = "#!"
     HashMap<String, CommandHandler> cmdMap = new HashMap<>()
     HashMap<String, CommandDefinition> cmdDefMap = new HashMap<>()
 
     @EventHandler
     void onMessage(MessageEvent event) {
         ChannelData channelData
+        String prefix = DEFAULT_PREFIX
         if(!event.isPrivate) {
             channelData = greetBot.database.getChannelData(event.connection.clientInfo.networkAlias, event.destination)
+            if(channelData) prefix = channelData.commandPrefix
+            if(!event.message.startsWith(prefix)) return
         }
         // Split into command and args
-        String prefix = channelData?.commandPrefix
-        if(prefix && !event.message.startsWith(prefix)) return
         List<String> cmdParts = event.message.split(" ")
         String cmd
         if(!prefix) cmd = cmdParts[0]
