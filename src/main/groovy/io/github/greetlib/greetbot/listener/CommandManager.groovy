@@ -1,5 +1,6 @@
 package io.github.greetlib.greetbot.listener
 
+import groovy.util.logging.Log4j2
 import io.github.greetlib.greet.event.EventHandler
 import io.github.greetlib.greet.event.irc.MessageEvent
 import io.github.greetlib.greetbot.AccessPrivilege
@@ -10,6 +11,7 @@ import io.github.greetlib.greetbot.model.CommandDefinition
 import io.github.greetlib.greetbot.model.UserData
 import io.github.greetlib.greetbot.util.HostUtil
 
+@Log4j2
 class CommandManager extends GreetBotEventListener {
     static String DEFAULT_PREFIX = "#!"
     HashMap<String, CommandHandler> cmdMap = new HashMap<>()
@@ -63,6 +65,7 @@ class CommandManager extends GreetBotEventListener {
                 Command command = new Command(cmd, cmdParts.subList(1, cmdParts.size()), event, cmdDef, userData)
                 cmdMap.get(cmd).onCommand(command)
             } catch(Exception ex) {
+                log.error "Error during command processing", ex
                 event.reply "Error during command processing: ${ex.message}"
             }
         }
