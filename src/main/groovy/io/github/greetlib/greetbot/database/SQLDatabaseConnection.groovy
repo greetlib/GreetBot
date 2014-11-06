@@ -205,6 +205,15 @@ class SQLDatabaseConnection extends DatabaseConnection {
     }
 
     @Override
+    void removeChannel(String channel, String networkAlias) {
+        long networkID = getNetworkID(networkAlias)
+        sql.execute """
+            DELETE FROM `Channels` WHERE `ChannelName` = ${channel} AND `NetworkID` = ${networkID}
+        """
+        networkChannelCache.get(networkAlias)?.remove(channel)
+    }
+
+    @Override
     ArrayList<String> getChannelNames(String networkAlias) {
         if(!networkChannelCache.containsKey(networkAlias) || networkChannelCache.get(networkAlias).isEmpty()) {
             long networkID = getNetworkID(networkAlias)

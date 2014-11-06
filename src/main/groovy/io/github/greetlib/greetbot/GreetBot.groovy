@@ -14,6 +14,7 @@ import io.github.greetlib.greetbot.listener.CommandManager
 import io.github.greetlib.greetbot.model.ChannelData
 import io.github.greetlib.greetbot.modules.AuthenticationModule
 import io.github.greetlib.greetbot.modules.CacheUtilityModule
+import io.github.greetlib.greetbot.modules.ChannelModule
 import io.github.greetlib.greetbot.modules.EvalModule
 import io.netty.channel.Channel
 import io.netty.channel.ChannelFuture
@@ -90,6 +91,7 @@ class GreetBot implements IRCEventListener {
             ModuleLoader.loadModule(AuthenticationModule.class, true)
             ModuleLoader.loadModule(EvalModule.class, true)
             ModuleLoader.loadModule(CacheUtilityModule.class, true)
+            ModuleLoader.loadModule(ChannelModule.class, true)
         }
     }
 

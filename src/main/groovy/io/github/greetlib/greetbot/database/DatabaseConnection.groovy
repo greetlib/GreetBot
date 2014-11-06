@@ -20,6 +20,7 @@ abstract class DatabaseConnection {
     abstract void addUserData(UserData userData, String tokenHash, String email, String networkAlias)
     abstract void addNetwork(String host)
     abstract void addChannel(ChannelData channelData)
+    abstract void removeChannel(String channel, String networkAlias)
     abstract ArrayList<String> getChannelNames(String networkAlias)
     abstract ChannelData getChannelData(String networkAlias, String channelName)
     abstract LRUCacheStatistics getCacheStatistics()
