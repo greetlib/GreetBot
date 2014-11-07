@@ -1,13 +1,10 @@
 package io.github.greetlib.greetbot.modules
 
-import io.github.greetlib.greet.net.UserInfo
 import io.github.greetlib.greetbot.Command
 import io.github.greetlib.greetbot.GreetBotModule
 import io.github.greetlib.greetbot.model.ChannelData
 import io.github.greetlib.greetbot.model.CommandDefinition
 import io.github.greetlib.greetbot.model.ModuleData
-import io.github.greetlib.greetbot.util.HostUtil
-
 
 class ChannelModule extends GreetBotModule {
     ModuleData moduleData = [
@@ -54,11 +51,9 @@ class ChannelModule extends GreetBotModule {
     //TODO These kinds of API calls are unacceptable. Top of the list.
     void join(Command c) {
         c.messageEvent.connection.join c.args[0]
-        String reply = "Joined ${c.args[0]}. "
+        StringBuffer reply = ["Joined ${c.args[0]}. "]
         if(c.args.size() == 2) {
-            UserInfo adminUserInfo = c.messageEvent.connection.getUserInfo(c.args[1])
-            String adminHost = HostUtil.getUserHostMask(adminUserInfo.hostname)
-            long adminTokenID = greetBot.database.getUserDataByHostname(adminHost).tokenID
+            long adminTokenID = greetBot.database.getUserDataByHostname(c.userHost).tokenID
             greetBot.database.addChannel(new ChannelData([
                     networkAlias: c.messageEvent.connection.clientInfo.networkAlias,
                     channelName: c.args[0],
@@ -66,16 +61,16 @@ class ChannelModule extends GreetBotModule {
             ]))
             reply << "Channel saved to database."
         }
-        c.messageEvent.reply reply
+        c.messageEvent.reply reply as String
     }
 
     void part(Command c) {
         c.messageEvent.connection.part c.args[0]
-        String reply = "Parted ${c.args[0]} "
+        StringBuffer reply = ["Parted ${c.args[0]}. "]
         if(c.args.size() == 2) {
             greetBot.database.removeChannel(c.args[0], c.messageEvent.connection.clientInfo.networkAlias)
             reply << "Channel removed from database."
         }
-        c.messageEvent.reply reply
+        c.messageEvent.reply reply as String
     }
 }
