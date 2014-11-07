@@ -21,10 +21,10 @@ class UpdateModule extends GreetBotModule {
         @Override
         void run() {
             log.info "Checking for updates..."
-            String currentRevision = "git rev-parse --short HEAD".execute().text
+            String currentRevision = execute("git rev-parse --short HEAD").text
             lastGoodRevision = currentRevision
             "git fetch".execute()
-            String newRevision = "git log origin --format=%h | head -n1".execute().text
+            String newRevision = execute("git log origin --format=%h | head -n1").text
             if(newRevision == lastBadRevision) {
                 log.info "Revision has previously failed testing. Not updating."
                 return
@@ -33,10 +33,10 @@ class UpdateModule extends GreetBotModule {
                 log.info "No updates."
                 return
             }
-            "git checkout origin/HEAD".execute()
-            String branch = "git symbolic-ref -q --short HEAD".execute().text
+            execute("git checkout origin/HEAD")
+            String branch = execute("git symbolic-ref -q --short HEAD").text
             broadcastMessage "Starting update from $branch branch revision $currentRevision->$newRevision. Running tests."
-            ArrayList<String> testResults = "gradle check | tail -n 3 | grep '.'".execute().text.split("\n")
+            ArrayList<String> testResults = execute("gradle check | tail -n 3 | grep '.'").text.split("\n")
             String testTime = testResults[1].substring(testResults[1].indexOf(":"))
             if(testResults[0] == "BUILD SUCCESSFUL") {
                 broadcastMessage "Tests passed in ${testTime}. Restarting for update to revision $newRevision"
@@ -47,20 +47,26 @@ class UpdateModule extends GreetBotModule {
                 broadcastMessage "Tests failed. Staying on revision $currentRevision"
                 lastBadRevision = newRevision
                 log.info "Tests failed for revision $newRevision"
-                "git checkout $currentRevision".execute()
+                execute("git checkout $currentRevision")
             }
         }
     }
 
     public broadcastMessage(String msg) {
-
-        /*greetBot.conMap.each {
-            IRCConnection con = it.value
-            it.value.channelInfoMap.values().each {
-                con.sendMessage it.channelName, msg
+        greetBot.conMap.values().each {
+            IRCConnection con = it
+            it.channelInfoMap.each {
+                con.sendMessage it.value.channelName, msg
                 sleep 500
             }
-        }*/
+        }
+    }
+
+    private Process execute(String c) {
+        log.debug "$c"
+        Process p = c.execute()
+        log.debug p.text
+        return p
     }
 
     public UpdateModule() {
