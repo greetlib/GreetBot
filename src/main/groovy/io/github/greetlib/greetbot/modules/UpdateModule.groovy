@@ -63,9 +63,10 @@ class UpdateModule extends GreetBotModule {
     }
 
     private String execute(String c) {
-        log.debug "$c"
+        ArrayList<String> cmd = ["/bin/bash", '-c', c]
+        log.debug cmd
         StringBuffer output = [""]
-        Process p = c.execute()
+        Process p = cmd.execute()
         p.waitForProcessOutput(output, output)
         log.debug output
         return output
