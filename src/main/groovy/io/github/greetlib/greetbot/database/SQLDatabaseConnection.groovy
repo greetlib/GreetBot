@@ -376,6 +376,7 @@ class SQLDatabaseConnection extends DatabaseConnection {
         GroovyRowResult result = sql.firstRow """
             SELECT `TokenID` FROM `Tokens` WHERE `Email` = $email
         """
-        return result ? ["TokenID"] as long : null
+        if(result) return result['TokenID'] as long
+        else return null as Long
     }
 }
