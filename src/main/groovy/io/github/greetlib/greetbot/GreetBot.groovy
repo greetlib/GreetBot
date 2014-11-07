@@ -12,21 +12,18 @@ import io.github.greetlib.greetbot.database.DatabaseConnection
 import io.github.greetlib.greetbot.database.SQLDatabaseConnection
 import io.github.greetlib.greetbot.listener.CommandManager
 import io.github.greetlib.greetbot.model.ChannelData
-import io.github.greetlib.greetbot.modules.AuthenticationModule
-import io.github.greetlib.greetbot.modules.CacheUtilityModule
-import io.github.greetlib.greetbot.modules.ChannelModule
-import io.github.greetlib.greetbot.modules.EvalModule
-import io.github.greetlib.greetbot.modules.UpdateModule
+import io.github.greetlib.greetbot.modules.*
 import io.netty.channel.Channel
 import io.netty.channel.ChannelFuture
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @Log4j2
 class GreetBot implements IRCEventListener {
     private static GreetBot instance
-    final HashMap<String, IRCConnection> conMap = new HashMap<>()
+    final ConcurrentHashMap<String, IRCConnection> conMap = new ConcurrentHashMap<>()
     final ArrayList<EventManager> eventManagers = new ArrayList<>()
 
     private DatabaseConnection database

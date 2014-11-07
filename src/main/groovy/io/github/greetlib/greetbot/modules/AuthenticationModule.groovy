@@ -195,12 +195,12 @@ class AuthenticationModule extends GreetBotModule {
             return
         }
         userData = new UserData()
-        userData.knownHosts.add(userHost)
         if(target == "global") userData.globalAccess = [accessLevel: c.args.last().toShort()] as AccessPrivilege
         else userData.channelAccess.put(target, [accessLevel: c.args.last().toShort()] as AccessPrivilege)
         String token = TokenUtil.generate()
         String tokenHash = TokenUtil.hash(token)
         greetBot.database.addUserData(userData, tokenHash, c.args[1], c.messageEvent.connection.clientInfo.networkAlias)
+        greetBot.database.addKnownHost(userData, userHost)
         c.messageEvent.connection.sendMessage(c.args[0], "You now have a user account on " +
                 "${c.messageEvent.connection.clientInfo.nickName}. Your current host has been authorized for this account")
         c.messageEvent.connection.sendMessage(c.args[0], "Your token is ${token} - DO NOT SHARE THIS TOKEN!")

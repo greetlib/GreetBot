@@ -12,6 +12,7 @@ class UpdateModule extends GreetBotModule {
             version: '0.1a',
             author: 'GreetBot',
             shortDescription: 'Automatic updates via git repository',
+            tokenID: 1
     ]
     private String lastBadRevision
     private String lastGoodRevision

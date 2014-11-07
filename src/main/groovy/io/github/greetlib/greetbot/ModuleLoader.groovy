@@ -49,6 +49,9 @@ class ModuleLoader {
         if(!moduleInfo.version || moduleInfo.version.length() > 30) {
             return "Module version invalid or too long"
         }
+        if(!moduleInfo.tokenID) {
+            return "No administrative token ID specified."
+        }
         // Check for command collisions
         ArrayList<String> cmds = []
         module.getCommands().each { cmds << it.command}
