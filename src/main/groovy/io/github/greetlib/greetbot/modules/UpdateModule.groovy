@@ -41,7 +41,7 @@ class UpdateModule extends GreetBotModule {
             if(testResults[0] == "BUILD SUCCESSFUL") {
                 broadcastMessage "Tests passed in ${testTime}. Restarting for update to revision $newRevision"
                 log.info "Updating to revision ${newRevision}"
-                System.exit(0) //TODO Graceful shutdown?
+                greetBot.stop()
             }
             else {
                 broadcastMessage "Tests failed. Staying on revision $currentRevision"

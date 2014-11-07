@@ -63,6 +63,12 @@ class GreetBot implements IRCEventListener {
         }
     }
 
+    public void stop() {
+        conMap.values().each {
+            it.shutdown()
+        }
+    }
+
     private syncConfigWithDatabase() {
         for(BotConfig.ServerConfig server : botConfig.serverConfigMap.values()) {
             database.addNetwork(server.alias)
