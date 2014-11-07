@@ -53,13 +53,14 @@ class UpdateModule extends GreetBotModule {
     }
 
     public broadcastMessage(String msg) {
-        greetBot.conMap.each {
+
+        /*greetBot.conMap.each {
             IRCConnection con = it.value
             it.value.channelInfoMap.values().each {
                 con.sendMessage it.channelName, msg
                 sleep 500
             }
-        }
+        }*/
     }
 
     public UpdateModule() {
