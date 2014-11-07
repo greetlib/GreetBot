@@ -21,10 +21,10 @@ class UpdateModule extends GreetBotModule {
         @Override
         void run() {
             log.info "Checking for updates..."
-            String currentRevision = execute("git rev-parse --short HEAD").text
+            String currentRevision = execute("git rev-parse --short HEAD")
             lastGoodRevision = currentRevision
             "git fetch".execute()
-            String newRevision = execute("git log origin --format=%h | head -n1").text
+            String newRevision = execute("git log origin --format=%h | head -n1")
             if(newRevision == lastBadRevision) {
                 log.info "Revision has previously failed testing. Not updating."
                 return
@@ -34,9 +34,9 @@ class UpdateModule extends GreetBotModule {
                 return
             }
             execute("git checkout origin/HEAD")
-            String branch = execute("git symbolic-ref -q --short HEAD").text
+            String branch = execute("git symbolic-ref -q --short HEAD")
             broadcastMessage "Starting update from $branch branch revision $currentRevision->$newRevision. Running tests."
-            ArrayList<String> testResults = execute("gradle check | tail -n 3 | grep '.'").text.split("\n")
+            ArrayList<String> testResults = execute("gradle check | tail -n 3 | grep '.'").split("\n")
             String testTime = testResults[1].substring(testResults[1].indexOf(":"))
             if(testResults[0] == "BUILD SUCCESSFUL") {
                 broadcastMessage "Tests passed in ${testTime}. Restarting for update to revision $newRevision"
@@ -62,11 +62,13 @@ class UpdateModule extends GreetBotModule {
         }
     }
 
-    private Process execute(String c) {
+    private String execute(String c) {
         log.debug "$c"
         Process p = c.execute()
-        log.debug p.text
-        return p
+        p.waitForProcessOutput()
+        String out = p.text
+        log.debug out
+        return out
     }
 
     public UpdateModule() {
