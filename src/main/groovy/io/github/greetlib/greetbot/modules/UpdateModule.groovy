@@ -64,11 +64,11 @@ class UpdateModule extends GreetBotModule {
 
     private String execute(String c) {
         log.debug "$c"
+        StringBuffer output = [""]
         Process p = c.execute()
-        p.waitForProcessOutput()
-        String out = p.text
-        log.debug out
-        return out
+        p.waitForProcessOutput(output, output)
+        log.debug output
+        return output
     }
 
     public UpdateModule() {
