@@ -36,7 +36,7 @@ class UpdateModule extends GreetBotModule {
             String branch = "git symbolic-ref -q --short HEAD".execute().text
             broadcastMessage "Starting update from $branch branch revision $currentRevision->$newRevision. Running tests."
             ArrayList<String> testResults = "gradle check | tail -n 3 | grep '.'".execute().text.split("\n")
-            String testTime = testResults[1].substring(testResults[1].indexOf(": "))
+            String testTime = testResults[1].substring(testResults[1].indexOf(":"))
             if(testResults[0] == "BUILD SUCCESSFUL") {
                 broadcastMessage "Tests passed in ${testTime}. Restarting for update to revision $newRevision"
                 log.info "Updating to revision ${newRevision}"
