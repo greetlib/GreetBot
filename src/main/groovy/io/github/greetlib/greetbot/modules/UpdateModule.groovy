@@ -24,7 +24,7 @@ class UpdateModule extends GreetBotModule {
             String currentRevision = execute("git rev-parse --short HEAD")
             lastGoodRevision = currentRevision
             execute("git fetch")
-            String newRevision = execute("git log origin --format=%h | head -n1")
+            String newRevision = execute("git rev-parse --short origin")
             if(newRevision == lastBadRevision) {
                 log.info "Revision has previously failed testing. Not updating."
                 return
