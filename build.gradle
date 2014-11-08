@@ -20,7 +20,7 @@ mainClassName = "io.github.greetlib.greetbot.GreetBot"
 
 jar {
     manifest {
-        attributes("Class-Path": ".")
+        attributes("Class-Path": "./log4j2.xml")
     }
 }
 
