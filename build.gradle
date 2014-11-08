@@ -18,12 +18,6 @@ version = '1.0'
 group = "io.github.greetlib"
 mainClassName = "io.github.greetlib.greetbot.GreetBot"
 
-jar {
-    manifest {
-        attributes("Class-Path": "./log4j2.xml")
-    }
-}
-
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.0-beta-3'
     compile 'org.apache.logging.log4j:log4j-core:2.0.2'
