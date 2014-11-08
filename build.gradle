@@ -1,10 +1,18 @@
-apply plugin: 'groovy'
-apply plugin: 'application'
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
+    }
+}
 
-sourceCompatibility = 1.8
-version = '1.0'
-group = "io.github.greetlib"
-mainClassName = "io.github.greetlib.greetbot.GreetBot"
+plugins {
+    id 'groovy'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '1.1.2'
+}
 
 repositories {
     mavenCentral()
@@ -21,3 +29,8 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.33'
     testCompile 'junit:junit:4.12-beta-2@jar'
 }
+
+sourceCompatibility = 1.8
+version = '1.0'
+group = "io.github.greetlib"
+mainClassName = "io.github.greetlib.greetbot.GreetBot"
