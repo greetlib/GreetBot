@@ -2,4 +2,3 @@ build/*
 .gradle/*
 *.iml
 config.yml
-gradle/*
